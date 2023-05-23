@@ -12,7 +12,7 @@ class ConfigurationManager
         if(file_exists(DataConst::GetConfigFile()))
         {
             $configContent = file_get_contents(DataConst::GetConfigFile());
-            return json_decode($configContent, true);
+            return json_decode($configContent, true, 512, JSON_THROW_ON_ERROR);
         }
 
         return [];

@@ -9,9 +9,7 @@ class ClassExtension extends TwigExtension
 {
     public function getFunctions() : array
     {
-        return array(
-            new TwigFunction('class', array($this, 'getClassName')),
-        );
+        return [new TwigFunction('class', [$this, 'getClassName'])];
     }
 
     public function getClassName(mixed $object) : ?string

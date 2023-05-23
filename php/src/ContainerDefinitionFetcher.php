@@ -45,7 +45,7 @@ class ContainerDefinitionFetcher
      */
     private function GetDefinition(bool $latest): array
     {
-        $data = json_decode(file_get_contents(__DIR__ . '/../containers.json'), true);
+        $data = json_decode(file_get_contents(__DIR__ . '/../containers.json'), true, 512, JSON_THROW_ON_ERROR);
 
         $containers = [];
         foreach ($data['aio_services_v1'] as $entry) {

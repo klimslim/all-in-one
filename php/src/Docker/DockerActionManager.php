@@ -63,7 +63,7 @@ class DockerActionManager
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         if ($responseBody['State']['Running'] === true) {
             return new RunningState();
@@ -84,7 +84,7 @@ class DockerActionManager
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         if ($responseBody['State']['Restarting'] === true) {
             return new RestartingState();
@@ -248,7 +248,7 @@ class DockerActionManager
             $patterns = ['/%(.*)%/'];
 
             if(preg_match($patterns[0], $env, $out) === 1) {
-                $replacements = array();
+                $replacements = [];
 
                 if($out[1] === 'NC_DOMAIN') {
                     $replacements[1] = $this->configurationManager->GetDomain();
@@ -536,11 +536,11 @@ class DockerActionManager
     private function GetRepoDigestsOfContainer(string $containerName) : ?array {
         try {
             $containerUrl = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
-            $containerOutput = json_decode($this->guzzleClient->get($containerUrl)->getBody()->getContents(), true);
+            $containerOutput = json_decode($this->guzzleClient->get($containerUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $imageName = $containerOutput['Image'];
 
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
-            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true);
+            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['RepoDigests'])) {
                 error_log('RepoDigests is not set of container ' . $containerName);
@@ -584,7 +584,7 @@ class DockerActionManager
         $containerName = 'nextcloud-aio-mastercontainer';
         $url = $this->BuildApiUrl(sprintf('containers/%s/json', $containerName));
         try {
-            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true);
+            $output = json_decode($this->guzzleClient->get($url)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $containerChecksum = $output['Image'];
             $tagArray = explode(':', $output['Config']['Image']);
             $tag = $tagArray[1];
@@ -654,7 +654,9 @@ class DockerActionManager
                         ],
                     ]
                 )->getBody()->getContents(),
-                true
+                true,
+                512,
+                JSON_THROW_ON_ERROR
             );
 
             $id = $response['Id'];
@@ -779,7 +781,7 @@ class DockerActionManager
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $exitCode = $responseBody['State']['ExitCode'];
         if (is_int($exitCode)) {
@@ -802,7 +804,7 @@ class DockerActionManager
             throw $e;
         }
 
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $exitCode = $responseBody['State']['ExitCode'];
         if (is_int($exitCode)) {
@@ -834,7 +836,7 @@ class DockerActionManager
         $imageName = 'nextcloud/aio-nextcloud' . ':' . $this->GetCurrentChannel();
         try {
             $imageUrl = $this->BuildApiUrl(sprintf('images/%s/json', $imageName));
-            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true);
+            $imageOutput = json_decode($this->guzzleClient->get($imageUrl)->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($imageOutput['Created'])) {
                 error_log('Created is not set of image ' . $imageName);
